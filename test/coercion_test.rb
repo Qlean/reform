@@ -1,21 +1,23 @@
-require "test_helper"
-require "reform/form/coercion"
+# frozen_string_literal: true
+
+require 'test_helper'
+require 'reform/form/coercion'
 
 class CoercionTest < BaseTest
   class Irreversible
     def self.call(value)
-      value*2
+      value * 2
     end
   end
 
   class Form < Reform::Form
     feature Coercion
 
-    property :released_at, type: Types::Form::DateTime
+    property :released_at, type: Types::Params::DateTime
 
     property :hit do
-      property :length, type: Types::Form::Int
-      property :good,   type: Types::Form::Bool
+      property :length, type: Types::Params::Integer
+      property :good,   type: Types::Params::Bool
     end
 
     property :band do
@@ -29,37 +31,35 @@ class CoercionTest < BaseTest
     Form.new(album)
   end
 
-  let (:album) {
+  let (:album) do
     OpenStruct.new(
-      :released_at => "31/03/1981",
-      :hit         => OpenStruct.new(:length => "312"),
-      :band        => Band.new(OpenStruct.new(:value => "9999.99"))
+      released_at: '31/03/1981',
+      hit: OpenStruct.new(length: '312'),
+      band: Band.new(OpenStruct.new(value: '9999.99'))
     )
-  }
+  end
 
   # it { subject.released_at.must_be_kind_of DateTime }
-  it { subject.released_at.must_equal "31/03/1981" } # NO coercion in setup.
-  it { subject.hit.length.must_equal "312" }
-  it { subject.band.label.value.must_equal "9999.99" }
+  it { subject.released_at.must_equal '31/03/1981' } # NO coercion in setup.
+  it { subject.hit.length.must_equal '312' }
+  it { subject.band.label.value.must_equal '9999.99' }
 
-
-  let (:params) {
+  let (:params) do
     {
-      :released_at => "30/03/1981",
-      :hit         => {:length => "312"},
-      :band        => {:label => {:value => "9999.99"}}
+      released_at: '30/03/1981',
+      hit: { length: '312' },
+      band: { label: { value: '9999.99' } }
     }
-  }
-
+  end
 
   # validate
-  describe "#validate" do
+  describe '#validate' do
     before { subject.validate(params) }
 
-    it { subject.released_at.must_equal DateTime.parse("30/03/1981") }
+    it { subject.released_at.must_equal DateTime.parse('30/03/1981') }
     it { subject.hit.length.must_equal 312 }
     it { subject.hit.good.must_equal nil }
-    it { subject.band.label.value.must_equal "9999.999999.99" } # coercion happened once.
+    it { subject.band.label.value.must_equal '9999.999999.99' } # coercion happened once.
   end
 
   # save

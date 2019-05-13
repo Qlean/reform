@@ -1,8 +1,10 @@
-require "reform"
+# frozen_string_literal: true
+
+require 'reform'
 require 'minitest/autorun'
-require "representable/debug"
-require "declarative/testing"
-require "pp"
+require 'representable/debug'
+require 'declarative/testing'
+require 'pp'
 
 class BaseTest < MiniTest::Spec
   class AlbumForm < Reform::Form
@@ -23,8 +25,7 @@ class BaseTest < MiniTest::Spec
   Label  = Struct.new(:name)
   Length = Struct.new(:minutes, :seconds)
 
-
-  let (:hit) { Song.new("Roxanne") }
+  let (:hit) { Song.new('Roxanne') }
 end
 
 MiniTest::Spec.class_eval do
